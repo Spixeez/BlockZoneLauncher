@@ -1,3 +1,47 @@
+<style>
+    #loginActions {
+        display: flex;
+        gap: 10px; /* Espace entre les deux boutons */
+        margin-top: 15px; /* Espace au-dessus des boutons */
+    }
+
+    #loginActions button {
+        flex: 1; /* Chaque bouton prend une largeur égale */
+        padding: 12px; /* Rend les boutons plus hauts */
+        font-size: 1em; /* Assure que le texte est lisible */
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Style spécifique pour le bouton de connexion principal */
+    #loginButton {
+        background-color: #4CAF50; /* Couleur verte par défaut */
+        color: white;
+    }
+
+    #loginButton:disabled {
+        background-color: #5a685b; /* Couleur quand désactivé */
+        cursor: not-allowed;
+    }
+
+    /* Style spécifique pour le NOUVEAU bouton hors ligne pour le rendre visible */
+    #offlineLoginButton {
+        background-color: #6c757d; /* Couleur grise distincte */
+        color: white;
+    }
+
+    #offlineLoginButton:hover {
+        background-color: #5a6268;
+    }
+
+    #offlineLoginButton:disabled {
+        background-color: #888c90;
+        cursor: not-allowed;
+    }
+</style>
+
 <div id="loginContainer" style="display: none;">
     <div id="loginCancelContainer" style="display: none;">
         <button id="loginCancelButton">
@@ -37,21 +81,29 @@
                     <span class="loginCheckmark"></span>
                 </label>
             </div>
-            <button id="loginButton" disabled>
-                <div id="loginButtonContent">
-                    <%- lang('login.loginButtonText') %>
-                    <svg id="loginSVG" viewBox="0 0 24.87 13.97">
-                        <defs>
-                            <style>.arrowLine{fill:none;stroke:#FFF;stroke-width:2px;transition: 0.25s ease;}</style>
-                        </defs>
-                        <polyline class="arrowLine" points="0.71 13.26 12.56 1.41 24.16 13.02"/>
-                    </svg>
-                    <div class="circle-loader">
-                        <div class="checkmark draw"></div>
+
+            <div id="loginActions">
+                <button id="loginButton" disabled>
+                    <div id="loginButtonContent">
+                        <%- lang('login.loginButtonText') %>
+                        <svg id="loginSVG" viewBox="0 0 24.87 13.97">
+                            <defs>
+                                <style>.arrowLine{fill:none;stroke:#FFF;stroke-width:2px;transition: 0.25s ease;}</style>
+                            </defs>
+                            <polyline class="arrowLine" points="0.71 13.26 12.56 1.41 24.16 13.02"/>
+                        </svg>
+                        <div class="circle-loader">
+                            <div class="checkmark draw"></div>
+                        </div>
                     </div>
-                    <!--<div class="spinningCircle" id="loginSpinner"></div>-->
-                </div>
-            </button>
+                </button>
+                
+                <button id="offlineLoginButton">
+                    <div id="loginButtonContent">
+                        <%- lang('login.offlineModeButtonText') %>
+                    </div>
+                </button>
+            </div>
             <div id="loginDisclaimer">
                 <span class="loginSpanDim" id="loginRegisterSpan">
                     <a href="<%- lang('login.loginNeedAccountLink') %>"><%- lang('login.loginNeedAccountText') %></a>

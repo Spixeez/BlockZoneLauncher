@@ -16,6 +16,7 @@ const loginPassword         = document.getElementById('loginPassword')
 const checkmarkContainer    = document.getElementById('checkmarkContainer')
 const loginRememberOption   = document.getElementById('loginRememberOption')
 const loginButton           = document.getElementById('loginButton')
+const offlineLoginButton    = document.getElementById('offlineLoginButton') // AJOUTÉ
 const loginForm             = document.getElementById('loginForm')
 
 // Control variables.
@@ -24,8 +25,7 @@ let lu = false, lp = false
 
 /**
  * Show a login error.
- * 
- * @param {HTMLElement} element The element on which to display the error.
+ * * @param {HTMLElement} element The element on which to display the error.
  * @param {string} value The error text.
  */
 function showError(element, value){
@@ -35,8 +35,7 @@ function showError(element, value){
 
 /**
  * Shake a login error to add emphasis.
- * 
- * @param {HTMLElement} element The element to shake.
+ * * @param {HTMLElement} element The element to shake.
  */
 function shakeError(element){
     if(element.style.opacity == 1){
@@ -48,8 +47,7 @@ function shakeError(element){
 
 /**
  * Validate that an email field is neither empty nor invalid.
- * 
- * @param {string} value The email value.
+ * * @param {string} value The email value.
  */
 function validateEmail(value){
     if(value){
@@ -73,8 +71,7 @@ function validateEmail(value){
 
 /**
  * Validate that the password field is not empty.
- * 
- * @param {string} value The password value.
+ * * @param {string} value The password value.
  */
 function validatePassword(value){
     if(value){
@@ -110,8 +107,7 @@ loginPassword.addEventListener('input', (e) => {
 
 /**
  * Enable or disable the login button.
- * 
- * @param {boolean} v True to enable, false to disable.
+ * * @param {boolean} v True to enable, false to disable.
  */
 function loginDisabled(v){
     if(loginButton.disabled !== v){
@@ -121,8 +117,7 @@ function loginDisabled(v){
 
 /**
  * Enable or disable loading elements.
- * 
- * @param {boolean} v True to enable, false to disable.
+ * * @param {boolean} v True to enable, false to disable.
  */
 function loginLoading(v){
     if(v){
@@ -136,11 +131,11 @@ function loginLoading(v){
 
 /**
  * Enable or disable login form.
- * 
- * @param {boolean} v True to enable, false to disable.
+ * * @param {boolean} v True to enable, false to disable.
  */
 function formDisabled(v){
     loginDisabled(v)
+    offlineLoginButton.disabled = v // AJOUTÉ pour désactiver aussi le bouton hors ligne
     loginCancelButton.disabled = v
     loginUsername.disabled = v
     loginPassword.disabled = v
@@ -232,3 +227,49 @@ loginButton.addEventListener('click', () => {
     })
 
 })
+
+// #########################################################
+// ##               BLOC AJOUTÉ POUR LE MODE HORS LIGNE      ##
+// #########################################################
+
+/**
+ * Gère le clic sur le bouton de connexion hors ligne.
+ */
+offlineLoginButton.addEventListener('click', () => {
+    const usernameValue = loginUsername.value;
+
+    // 1. Valider que le nom d'utilisateur n'est pas vide et est valide.
+    if (!validUsername.test(usernameValue)) {
+        showError(loginEmailError, Lang.queryJS('login.error.invalidOfflineUsername'));
+        shakeError(loginEmailError);
+        return;
+    }
+
+    // 2. Désactiver le formulaire pour éviter les clics multiples.
+    formDisabled(true);
+
+    // 3. Créer un "faux" compte utilisateur pour le mode hors ligne.
+    // La structure de cet objet doit correspondre à ce que le reste de votre application attend.
+    const offlineAccount = {
+        username: usernameValue,
+        uuid: 'OFFLINE_UUID', // UUID générique ou basé sur le username
+        type: 'offline' // Un identifiant pour savoir que c'est un compte hors ligne
+    };
+
+    // 4. Mettre à jour le compte sélectionné et passer à la vue suivante.
+    updateSelectedAccount(offlineAccount);
+    
+    // Simuler une transition de succès comme pour la connexion normale
+    setTimeout(() => {
+        switchView(VIEWS.login, loginViewOnSuccess, 500, 500, async () => {
+            if(loginViewOnSuccess === VIEWS.settings){
+                await prepareSettings();
+            }
+            loginViewOnSuccess = VIEWS.landing; // Réinitialiser la vue
+            loginUsername.value = '';
+            loginPassword.value = '';
+            formDisabled(false); // Réactiver le formulaire
+        });
+    }, 500); // Un court délai pour simuler le chargement
+
+});
